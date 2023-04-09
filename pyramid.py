@@ -54,7 +54,7 @@ class Card:
         return self.value + __o.value == KING
 
     def __hash__(self) -> int:
-        return self.value + ord(self.suite)
+        return self.value + hash(self.suite)
 
     def __str__(self) -> str:
         symbol: str = ''
@@ -111,7 +111,7 @@ class Pyramid:
 
     def __hash__(self) -> int:
         return sum([hash(a) for e in self.cards for a in e]) + \
-            sum(hash(e) for e in self.new_stack) + 1
+            sum(hash(e) for e in self.new_stack)
 
     def load_from_file(self, path_to_file: str) -> None:
         all_values: list[Card] = list(
@@ -224,7 +224,7 @@ class Pyramid:
         else:
             raise Exception("No more flips left...")
 
-    def solve(self,verbose=True) -> list[str] | None:
+    def solve(self, verbose=True) -> list[str] | None:
         """
         This function is the heart of the pyramid class.
         It solves a given instance of the game, by preforming a BFS search for
@@ -256,6 +256,7 @@ class Pyramid:
 
             if pyr.is_complete:
                 return log
+
             open_kings = pyr.get_open_kings()
             if open_kings:
                 moved = deepcopy(pyr)
@@ -265,6 +266,7 @@ class Pyramid:
                     new_log.append(Move.POP_KING_PYRAMID)
                 res.append(MovePyramid(moved, new_log))
                 continue
+
             # Simply remove the king
             if pyr.top_new_stack == KING:
                 moved = deepcopy(pyr)
@@ -273,6 +275,7 @@ class Pyramid:
                 new_log.append(Move.POP_KING_NEW_STACK)
                 res.append(MovePyramid(moved, new_log))
                 continue
+
             # Simply remove the king
             if pyr.top_discard_stack == KING:
                 moved = deepcopy(pyr)
@@ -281,7 +284,7 @@ class Pyramid:
                 new_log.append(Move.POP_KING_DISCARD_STACK)
                 res.append(MovePyramid(moved, new_log))
                 continue
-            # con = False  # For a complete search this needs to be disabled
+
             for match in pyr.get_matches_in_pyramid():
                 # Try all possible matches in pyramid
                 moved = deepcopy(pyr)
@@ -293,9 +296,7 @@ class Pyramid:
                 moved.match(match)
                 new_log.append(Move.MATCH.format(first, second))
                 res.append(MovePyramid(moved, new_log))
-                # con = True
-            # if con:
-                # continue
+
             if pyr.get_match_in_stack():
                 moved = deepcopy(pyr)
                 new_log = deepcopy(log)
@@ -305,6 +306,7 @@ class Pyramid:
                 new_log.append(Move.MATCH_CARDS_STACK.format(
                     new_removed, disc_removed))
                 res.append(MovePyramid(moved, new_log))
+
             for pos in pyr.get_match_new_pyramid():
                 moved = deepcopy(pyr)
                 new_log = deepcopy(log)
@@ -333,6 +335,7 @@ class Pyramid:
 
                 new_log.append(Move.REMOVE_TOP_CARD)
                 res.append(MovePyramid(moved, new_log))
+
             if len(pyr.new_stack) == 0 and pyr.remaining_deck_flips > 0:
                 moved = deepcopy(pyr)
                 new_log = deepcopy(log)
