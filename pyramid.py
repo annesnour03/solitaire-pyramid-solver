@@ -41,7 +41,7 @@ class Card:
 
     def __init__(self, value) -> None:
         self.rank = value[0]
-        self.suite = value[1]
+        self.suite = value[1].upper()
         self.value = RANKS.index(self.rank.upper()) + 1
 
     @staticmethod
@@ -395,7 +395,7 @@ def main():
     pyr: Pyramid = Pyramid()
     pyr.load_from_file(case)
     t0: float = time.time()
-    result: list[str] | None = pyr.solve(verbose=False)
+    result: list[str] | None = pyr.solve(verbose=True)
 
     if result:
         print_log(result)
